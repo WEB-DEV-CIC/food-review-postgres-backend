@@ -1,0 +1,444 @@
+openapi: 3.0.0
+info:
+  title: Food Review API
+  version: 1.0.0
+  description: API for the Food Review Website
+  contact:
+    name: API Support
+    email: support@foodreview.com
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Food:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        region:
+          type: string
+        ingredients:
+          type: array
+          items:
+            type: string
+        tasteProfile:
+          type: array
+          items:
+            type: string
+            enum: [sweet, spicy, sour, bitter, umami]
+        dietaryRestrictions:
+          type: array
+          items:
+            type: string
+            enum: [vegetarian, vegan, gluten-free, halal, kosher]
+        imageUrl:
+          type: string
+        rating:
+          type: number
+          format: float
+        reviewCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        foodId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        rating:
+          type: number
+          format: float
+        comment:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [user, admin]
+        createdAt:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        details:
+          type: object
+
+paths:
+  /foods:
+    get:
+      summary: Get all food items
+      description: Retrieve a list of food items with optional filtering and pagination
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: region
+          in: query
+          schema:
+            type: string
+        - name: tasteProfile
+          in: query
+          schema:
+            type: string
+        - name: dietaryRestrictions
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  foods:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Food'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  totalPages:
+                    type: integer
+    post:
+      summary: Create a new food item
+      description: Create a new food item (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Food'
+      responses:
+        '201':
+          description: Food item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Food'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin access required
+
+  /foods/{foodId}:
+    parameters:
+      - name: foodId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get food item details
+      description: Retrieve detailed information about a specific food item
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Food'
+        '404':
+          description: Food item not found
+    put:
+      summary: Update food item
+      description: Update an existing food item (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Food'
+      responses:
+        '200':
+          description: Food item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Food'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin access required
+        '404':
+          description: Food item not found
+    delete:
+      summary: Delete food item
+      description: Delete a food item (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Food item deleted successfully
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin access required
+        '404':
+          description: Food item not found
+
+  /foods/{foodId}/reviews:
+    parameters:
+      - name: foodId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get food reviews
+      description: Retrieve all reviews for a specific food item
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Review'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  totalPages:
+                    type: integer
+    post:
+      summary: Create food review
+      description: Create a new review for a food item
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: number
+                  format: float
+                comment:
+                  type: string
+      responses:
+        '201':
+          description: Review created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '401':
+          description: Unauthorized
+
+  /auth/register:
+    post:
+      summary: Register new user
+      description: Register a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                name:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+
+  /auth/login:
+    post:
+      summary: User login
+      description: Authenticate user and return JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+
+  /admin/dashboard:
+    get:
+      summary: Get admin dashboard data
+      description: Retrieve admin dashboard statistics and data
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalFoods:
+                    type: integer
+                  totalUsers:
+                    type: integer
+                  totalReviews:
+                    type: integer
+                  recentReviews:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Review'
+                  pendingReviews:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Review'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin access required
+
+  /admin/reviews/{reviewId}:
+    parameters:
+      - name: reviewId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    put:
+      summary: Moderate review
+      description: Approve or reject a review (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [approved, rejected]
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Review moderated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden - Admin access required
+        '404':
+          description: Review not found 

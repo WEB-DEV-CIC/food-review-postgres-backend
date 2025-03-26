@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const connectDB = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
 const reviewRoutes = require('./routes/reviewRoutes');
+const foodRoutes = require('./routes/food');
 
 // Initialize express app
 const app = express();
@@ -23,6 +24,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/v1/foods', foodRoutes);
 
 // Basic route for testing
 app.get('/', (req, res) => {
