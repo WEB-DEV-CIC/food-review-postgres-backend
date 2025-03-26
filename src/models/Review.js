@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({
-  restaurantName: {
-    type: String,
-    required: [true, 'Restaurant name is required'],
-    trim: true
+  foodId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Food',
+    required: [true, 'Food ID is required']
   },
-  foodItem: {
-    type: String,
-    required: [true, 'Food item name is required'],
-    trim: true
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'User ID is required']
   },
   rating: {
     type: Number,
@@ -17,28 +17,16 @@ const reviewSchema = new mongoose.Schema({
     min: 1,
     max: 5
   },
-  review: {
+  comment: {
     type: String,
-    required: [true, 'Review text is required'],
+    required: [true, 'Review comment is required'],
     trim: true
-  },
-  images: [{
-    type: String, // URLs to uploaded images
-  }],
-  user: {
-    type: String,
-    required: [true, 'User identifier is required']
-  },
-  price: {
-    type: Number,
-    required: [true, 'Price is required']
-  },
-  tags: [{
-    type: String,
-    trim: true
-  }]
+  }
 }, {
   timestamps: true
 });
+
+// Index for efficient queries
+reviewSchema.index({ foodId: 1, userId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Review', reviewSchema); 
