@@ -36,7 +36,13 @@ app.get('/test', (req, res) => {
 
 // Mount routes
 app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/foods', authenticateToken, foodRoutes);
+app.use('/api/v1/foods', (req, res, next) => {
+  if (req.method === 'GET') {
+    next();
+  } else {
+    authenticateToken(req, res, next);
+  }
+}, foodRoutes);
 app.use('/api/v1/users', authenticateToken, userRoutes);
 app.use('/api/v1/reviews', authenticateToken, reviewRoutes);
 app.use('/api/v1/admin', authenticateToken, adminRoutes);
