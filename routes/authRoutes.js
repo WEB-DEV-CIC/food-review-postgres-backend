@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
     // Create user
     const result = await db.query(
       'INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, username, email, role',
-      [username, email, hashedPassword, 'admin']
+      [username, email, hashedPassword, 'user']
     );
     console.log('User created successfully:', result.rows[0]);
 
