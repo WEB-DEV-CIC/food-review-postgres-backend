@@ -1,14 +1,21 @@
-# Node modules
+# Dependencies
 node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
 
 # Environment variables
 .env
+
+# Authentication
 token.txt
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-pnpm-debug.log*
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# OS
+# OS specific files
 .DS_Store
+Thumbs.db

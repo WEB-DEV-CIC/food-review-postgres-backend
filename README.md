@@ -114,6 +114,32 @@ The application uses the following main tables:
 - food_ingredients (junction table)
 - food_taste_profiles (junction table)
 
+## Git Troubleshooting
+
+If you encounter push rejection errors, follow these steps:
+
+1. **Fetch and merge remote changes**
+```bash
+git fetch origin
+git pull origin <branch-name>
+```
+
+2. **Resolve any conflicts if they occur**
+   - Open conflicted files and resolve differences
+   - Stage resolved files:
+```bash
+git add .
+```
+   - Commit the changes:
+```bash
+git commit -m "Merge remote changes and resolve conflicts"
+```
+
+3. **Push your changes**
+```bash
+git push origin <branch-name>
+```
+
 ## Contributing
 
 1. Create a new branch for your feature
