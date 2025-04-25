@@ -1,11 +1,10 @@
 const { Pool } = require('pg');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false 
-  }
+  ssl: false // Disable SSL for local PostgreSQL
 });
 
 // Add sample users data
@@ -13,6 +12,11 @@ const sampleUsers = [
   {
     username: 'admin',
     email: 'admin@example.com',
+    password: 'admin123',
+    role: 'admin'
+  },{
+    username: 'admin2',
+    email: 'admin2@example.com',
     password: 'admin123',
     role: 'admin'
   },
@@ -272,13 +276,14 @@ const sampleFoods = [
 
 const seedDatabase = async () => {
   try {
-    // Seed users first
+    // Hash passwords before seeding users
     for (const user of sampleUsers) {
+      const hashedPassword = await bcrypt.hash(user.password, 10);
       await pool.query(`
         INSERT INTO users (username, email, password, role) 
         VALUES ($1, $2, $3, $4)
         ON CONFLICT (username) DO NOTHING
-      `, [user.username, user.email, user.password, user.role]);
+      `, [user.username, user.email, hashedPassword, user.role]);
     }
 
     // Seed regions
@@ -347,7 +352,7 @@ const seedDatabase = async () => {
       }
     }
 
-    console.log('Database seeded successfully!');
+    console.log('Database seeded successfully on local PostgreSQL!');
   } catch (error) {
     console.error('Error seeding database:', error);
   } finally {

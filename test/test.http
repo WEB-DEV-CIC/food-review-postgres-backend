@@ -1,0 +1,23 @@
+### Register new admin user
+POST http://localhost:3002/api/v1/auth/register
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "email": "admin@example.com",
+    "password": "admin123",
+    "role": "admin"
+}
+
+### Login as admin to get token
+POST http://localhost:3002/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "admin123"
+}
+
+### Test protected route with token
+GET http://localhost:3002/api/v1/admin/foods
+Authorization: Bearer <paste-your-token-here>

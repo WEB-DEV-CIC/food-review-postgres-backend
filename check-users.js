@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: false // Disable SSL for local PostgreSQL
 });
 
 async function checkUsers() {
@@ -17,4 +17,4 @@ async function checkUsers() {
   }
 }
 
-checkUsers(); 
+checkUsers();

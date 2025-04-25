@@ -1,0 +1,92 @@
+### Verify database connection
+GET http://localhost:3002/test
+
+### Register test user first
+POST http://localhost:3002/api/v1/auth/register
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "test1234",
+    "role": "user"
+}
+
+### Register admin user
+POST http://localhost:3002/api/v1/auth/register
+Content-Type: application/json
+
+{
+    "username": "admin2",
+    "email": "admin2@example.com",
+    "password": "admin123",
+    "role": "admin"
+}
+
+### Register new test user
+POST http://localhost:3002/api/v1/auth/register
+Content-Type: application/json
+
+{
+    "username": "testuser5",
+    "email": "test24@example.com",
+    "password": "test1234",
+    "role": "user"
+}
+
+### Test user login
+POST http://localhost:3002/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email": "test24@example.com",
+    "password": "test1234"
+}
+
+### Login with test user
+POST http://localhost:3002/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email": "test24@example.com",
+    "password": "test1234"
+}
+
+### Admin login
+POST http://localhost:3002/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin2@example.com",
+    "password": "admin123"
+}
+
+### Admin login to get fresh token
+POST http://localhost:3002/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin2@example.com",
+    "password": "admin123"
+}
+
+### Get current user (notice no curly braces around token)
+GET http://localhost:3002/api/v1/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI3LCJpYXQiOjE3NDU1ODY5OTYsImV4cCI6MTc0NTY3MzM5Nn0.qfRWhYDz5YUmKeaDIjkDWKyA02KcM84c92TmO-BhRhA
+
+
+### Test protected route with new token
+GET http://localhost:3002/api/v1/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI3LCJpYXQiOjE3NDU1ODY5OTYsImV4cCI6MTc0NTY3MzM5Nn0.qfRWhYDz5YUmKeaDIjkDWKyA02KcM84c92TmO-BhRhA
+
+
+### Test admin route
+GET http://localhost:3002/api/v1/admin/foods
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI2LCJpYXQiOjE3NDU1ODcxNTEsImV4cCI6MTc0NTY3MzU1MX0.yG0Kf979cKuzaD4oQABweYf-I9kXGoLoYyH2TrX5Fk0
+
+### Test food route
+GET http://localhost:3002/api/v1/foods
+Authorization: Bearer {{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI0LCJpYXQiOjE3NDU1ODUyOTEsImV4cCI6MTc0NTY3MTY5MX0.Chl5Trf3mYqGRyLLRjNTWjeryA6ed-9GRx5oH2q3__w}}
+
+### Variables
+@admin_token = <copy-paste-token-from-login-response>

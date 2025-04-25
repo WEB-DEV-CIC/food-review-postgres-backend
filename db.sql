@@ -30,7 +30,8 @@ CREATE TABLE foods (
   name VARCHAR(100) NOT NULL,
   description TEXT,
   region_id INTEGER REFERENCES regions(id),
-  image_url TEXT, 
+  image_url TEXT,
+  price DECIMAL(10,2), 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
